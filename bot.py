@@ -16,9 +16,9 @@ import datetime
 # تنظیمات
 # =========================
 
-BOT_TOKEN = "توکن ربات"
+BOT_TOKEN = "8667603518:AAFxT66irkdxIzpcJVrKmS2XPIdwDI1acHc"
 
-API_KEY = "API"
+API_KEY = "x5PLaG2rO6KIMwz4"
 
 ADMIN_ID = 8019491735
 
