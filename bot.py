@@ -38,10 +38,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     await update.message.reply_text(
-        "به ربات تلگرامی Pulse+SP خوش آمدید
-        جهت استفاده از ربات، روی هر یک از دکمه‌های زیر کلیک کنید تا سرویس مد نظر را مشاهده کنید.",
-        reply_markup=main_keyboard
-    )
+    """به ربات تلگرامی Pulse+SP خوش آمدید
+
+⬅️ به منوی اصلی بازگشتید""",
+    reply_markup=markup
+)
 
 
 async def amount(update: Update, context: ContextTypes.DEFAULT_TYPE):
