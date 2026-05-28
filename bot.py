@@ -1073,4 +1073,3 @@ app.add_handler(
 print("Bot started...")
 
 app.run_polling()
-```
