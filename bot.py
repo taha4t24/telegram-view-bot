@@ -840,7 +840,6 @@ async def add_discount(
         await update.message.reply_text(
             "خطا ❌"
         )
-   "python id="v2kq9m"
 # =========================
 # زیرمجموعه گیری
 # =========================
