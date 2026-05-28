@@ -117,7 +117,7 @@ async def get_count(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "✅ سفارش ثبت شد\n\n"
             f"🆔 شماره سفارش: {data['order']}\n"
             f"👁 تعداد: {data['count']}\n"
-            f"📢 کانال: @VPNPulseX"
+            f"📢 کانال: @Pulse_SP"
         )
 
         await update.message.reply_text(
