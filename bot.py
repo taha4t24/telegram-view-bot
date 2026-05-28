@@ -38,7 +38,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     await update.message.reply_text(
-        "ربات روشنه ✅\nیکی از گزینه‌ها را انتخاب کن:",
+        "به ربات تلگرامی Pulse+SP خوش آمدید
+        جهت استفاده از ربات، روی هر یک از دکمه‌های زیر کلیک کنید تا سرویس مد نظر را مشاهده کنید.",
         reply_markup=main_keyboard
     )
 
@@ -101,7 +102,7 @@ async def get_count(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "✅ سفارش ثبت شد\n\n"
             f"🆔 شماره سفارش: {data['order']}\n"
             f"👁 تعداد: {data['count']}\n"
-            f"📢 کانال: {data['channel']}"
+            f"📢 کانال: {data['Pulse_SP']}"
         )
 
         await update.message.reply_text(
