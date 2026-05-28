@@ -480,7 +480,6 @@ async def get_count(
 
     return ConversationHandler.END
 
-    ```python id="kq7vpm"
 # =========================
 # سفارش های من
 # =========================
