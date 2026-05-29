@@ -85,10 +85,11 @@ conn.commit()
 
 main_keyboard = ReplyKeyboardMarkup(
     [
-    ["📈 ثبت ویو"],
-    ["👤 حساب من"],
-    ["❌ لغو"]
-],
+        ["📈 ثبت ویو"],
+        ["👤 حساب من", "💸 انتقال سکه"],
+        ["📜 خرید های من", "🛠 پشتیبانی"],
+        ["❌ لغو"]
+    ],
     resize_keyboard=True
 )
 
@@ -865,6 +866,47 @@ async def referral(
     )
 
 # =========================
+# انتقال سکه
+# =========================
+
+async def transfer_coin(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    await update.message.reply_text(
+        """
+💸 برای انتقال سکه:
+
+دستور زیر را ارسال کنید:
+
+/transfer user_id amount
+
+مثال:
+/transfer 123456789 5000
+        """
+    )
+
+
+# =========================
+# پشتیبانی
+# =========================
+
+async def support(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    await update.message.reply_text(
+        """
+🛠 پشتیبانی
+
+آیدی پشتیبانی:
+@VPNPulseX
+        """
+    )
+
+# =========================
 # لغو
 # =========================
 
@@ -898,9 +940,16 @@ async def button_handler(
             context
         )
 
-    elif text == "💰 موجودی پنل":
+    elif text == "💸 انتقال سکه":
 
-        await amount(
+        await transfer_coin(
+            update,
+            context
+        )
+
+    elif text == "🛠 پشتیبانی":
+
+        await support(
             update,
             context
         )
