@@ -929,66 +929,68 @@ async def button_handler(
 
     elif text == "📊 آمار":
 
-    await stats(
-        update,
-        context
-    )
+        await stats(
+            update,
+            context
+        )
 
-elif text == "📨 ارسال همگانی":
+    elif text == "📨 ارسال همگانی":
 
-    await update.message.reply_text(
-        """
+        await update.message.reply_text(
+            """
 برای ارسال همگانی دستور زیر را بزن:
 
 /broadcast متن پیام
-        """
-    )
+            """
+        )
 
-elif text == "➕ شارژ کاربر":
+    elif text == "➕ شارژ کاربر":
 
-    await update.message.reply_text(
-        """
+        await update.message.reply_text(
+            """
 فرمت شارژ:
 
 /addbalance user_id amount
 
 مثال:
 /addbalance 123456789 50000
-        """
-    )
+            """
+        )
 
-elif text == "🚫 بن کاربر":
+    elif text == "🚫 بن کاربر":
 
-    await update.message.reply_text(
-        """
+        await update.message.reply_text(
+            """
 فرمت بن:
 
 /ban user_id
 
 مثال:
 /ban 123456789
-        """
-    )
+            """
+        )
 
-elif text == "✅ آنبن کاربر":
+    elif text == "✅ آنبن کاربر":
 
-    await update.message.reply_text(
-        """
+        await update.message.reply_text(
+            """
 فرمت آنبن:
 
 /unban user_id
 
 مثال:
 /unban 123456789
-        """
-    )
+            """
+        )
 
-elif text == "⬅️ بازگشت":
+    elif text == "📋 سفارش ها":
 
-    await start(
-        update,
-        context
-    )
+        await orders_list(
+            update,
+            context
+        )
+
+    elif text == "⬅️ بازگشت":
 
         await start(
             update,
