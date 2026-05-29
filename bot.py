@@ -47,16 +47,19 @@ CREATE TABLE IF NOT EXISTS users (
 )
 """)
 
-# سفارشات
+# انتقال ها
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS orders (
+CREATE TABLE IF NOT EXISTS transfers (
+
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    channel TEXT,
-    count INTEGER,
-    order_id TEXT,
-    price INTEGER,
-    date TEXT
+
+    sender_id INTEGER,
+
+    target_id INTEGER,
+
+    amount INTEGER,
+
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 """)
 
@@ -68,6 +71,8 @@ CREATE TABLE IF NOT EXISTS logs (
     date TEXT
 )
 """)
+
+conn.commit()
 
 # کد تخفیف
 cursor.execute("""
@@ -103,6 +108,7 @@ admin_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
+```python
 # =========================
 # توابع دیتابیس
 # =========================
@@ -115,6 +121,34 @@ def add_user(user_id):
     )
 
     conn.commit()
+
+
+def save_transfer(
+    sender_id,
+    target_id,
+    amount
+):
+
+    cursor.execute(
+        """
+        INSERT INTO transfers
+        (
+            sender_id,
+            target_id,
+            amount
+        )
+        VALUES
+        (?, ?, ?)
+        """,
+        (
+            sender_id,
+            target_id,
+            amount
+        )
+    )
+
+    conn.commit()
+
 
 def get_balance(user_id):
 
@@ -130,6 +164,7 @@ def get_balance(user_id):
 
     return 0
 
+
 def change_balance(user_id, amount):
 
     cursor.execute(
@@ -138,6 +173,7 @@ def change_balance(user_id, amount):
     )
 
     conn.commit()
+
 
 def is_banned(user_id):
 
@@ -153,6 +189,7 @@ def is_banned(user_id):
 
     return False
 
+
 def ban_user(user_id):
 
     cursor.execute(
@@ -162,6 +199,7 @@ def ban_user(user_id):
 
     conn.commit()
 
+
 def unban_user(user_id):
 
     cursor.execute(
@@ -170,6 +208,7 @@ def unban_user(user_id):
     )
 
     conn.commit()
+
 
 def save_order(
     user_id,
@@ -204,9 +243,51 @@ def save_order(
 
     conn.commit()
 
+
 def save_log(text):
 
     cursor.execute(
+        """
+        INSERT INTO logs
+        (
+            text,
+            date
+        )
+        VALUES (?, ?)
+        """,
+        (
+            text,
+            str(datetime.datetime.now())
+        )
+    )
+
+    conn.commit()
+
+
+def get_user_orders(user_id):
+
+    cursor.execute(
+        """
+        SELECT
+        order_id,
+        channel,
+        count,
+        price,
+        date
+
+        FROM orders
+
+        WHERE user_id=?
+
+        ORDER BY id DESC
+
+        LIMIT 10
+        """,
+        (user_id,)
+    )
+
+    return cursor.fetchall()
+
         """
         INSERT INTO logs
         (
@@ -253,6 +334,7 @@ async def start(
         reply_markup=main_keyboard
     )
 
+```python
 # =========================
 # حساب من
 # =========================
@@ -278,6 +360,46 @@ async def my_account(
         """,
         reply_markup=main_keyboard
     )
+
+
+# =========================
+# سفارش های من
+# =========================
+
+async def my_orders(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    user_id = update.effective_user.id
+
+    orders = get_user_orders(user_id)
+
+    if not orders:
+
+        await update.message.reply_text(
+            "شما هنوز سفارشی ثبت نکرده‌اید ❌"
+        )
+
+        return
+
+    text = "📜 سفارش های شما:\n\n"
+
+    for order in orders:
+
+        text += (
+            f"🆔 سفارش: {order[0]}\n"
+            f"📢 کانال: {order[1]}\n"
+            f"👁 تعداد: {order[2]}\n"
+            f"💰 قیمت: {order[3]}\n"
+            f"📅 تاریخ: {order[4]}\n\n"
+        )
+
+    await update.message.reply_text(
+        text,
+        reply_markup=main_keyboard
+    )
+
 
 # =========================
 # موجودی پنل
@@ -376,19 +498,31 @@ async def get_count(
 
         count = int(update.message.text)
 
-        price = count
+        # قیمت سفارش
+        price = count * 10
 
+        # موجودی کاربر
         balance = get_balance(user_id)
 
+        # چک موجودی
         if balance < price:
 
             await update.message.reply_text(
-                "موجودی شما کافی نیست ❌",
+                f"""
+❌ موجودی شما کافی نیست
+
+💰 هزینه سفارش:
+{price}
+
+👤 موجودی شما:
+{balance}
+                """,
                 reply_markup=main_keyboard
             )
 
             return ConversationHandler.END
 
+        # لینک پست
         link = context.user_data["link"]
 
         parts = link.split("/")
@@ -397,6 +531,7 @@ async def get_count(
 
         post_id = int(parts[-1])
 
+        # ثبت سفارش API
         params = {
             "apikey": API_KEY,
             "typeseen": "en",
@@ -416,11 +551,13 @@ async def get_count(
 
         data = r.json()
 
+        # کم شدن موجودی
         change_balance(
             user_id,
             -price
         )
 
+        # ذخیره سفارش
         save_order(
             user_id,
             channel,
@@ -429,43 +566,22 @@ async def get_count(
             price
         )
 
+        # ذخیره لاگ
         save_log(
             f"new order user:{user_id}"
         )
 
-        # نوتیف برای ادمین
-        await context.bot.send_message(
-            chat_id=ADMIN_ID,
-            text=f"""
-📦 سفارش جدید
-
-👤 کاربر:
-{user_id}
-
-📢 کانال:
-{channel}
-
-👁 تعداد:
-{count}
-            """
+        # پیام موفق
+        msg = (
+            "✅ سفارش ثبت شد\n\n"
+            f"🆔 شماره سفارش: {data['order']}\n"
+            f"👁 تعداد: {count}\n"
+            f"💰 هزینه: {price}\n"
+            f"📢 کانال: @VPNPulseX"
         )
 
         await update.message.reply_text(
-            f"""
-✅ سفارش ثبت شد
-
-🆔 شماره سفارش:
-{data['order']}
-
-👁 تعداد:
-{count}
-
-📢 کانال:
-@VPNPulseX
-
-💰 هزینه:
-{price} تومان
-            """,
+            msg,
             reply_markup=main_keyboard
         )
 
@@ -866,7 +982,7 @@ async def referral(
     )
 
 # =========================
-# انتقال سکه
+# انتقال سکه واقعی
 # =========================
 
 async def transfer_coin(
@@ -886,6 +1002,79 @@ async def transfer_coin(
 /transfer 123456789 5000
         """
     )
+
+# =========================
+# دستور انتقال
+# =========================
+
+async def transfer_command(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    try:
+
+        sender_id = update.effective_user.id
+
+        args = context.args
+
+        target_id = int(args[0])
+
+        amount = int(args[1])
+
+        if amount <= 0:
+
+            await update.message.reply_text(
+                "مبلغ نامعتبر ❌"
+            )
+
+            return
+
+        sender_balance = get_balance(sender_id)
+
+        if sender_balance < amount:
+
+            await update.message.reply_text(
+                "موجودی کافی نیست ❌"
+            )
+
+            return
+
+        add_user(target_id)
+
+        change_balance(sender_id, -amount)
+
+        change_balance(target_id, amount)
+
+                save_transfer(
+            sender_id,
+            target_id,
+            amount
+        )
+
+        await update.message.reply_text(
+            f"""
+✅ انتقال انجام شد
+
+💸 مبلغ:
+{amount}
+
+👤 به:
+{target_id}
+            """
+        )
+
+    except:
+
+        await update.message.reply_text(
+            """
+❌ خطا
+
+فرمت صحیح:
+
+/transfer user_id amount
+            """
+        )
 
 
 # =========================
@@ -955,6 +1144,15 @@ async def button_handler(
         )
 
     elif text == "👤 حساب من":
+
+
+    elif text == "📜 سفارش های من":
+
+        await my_orders(
+            update,
+            context
+        )
+
 
         await my_account(
             update,
@@ -1152,6 +1350,13 @@ app.add_handler(
     CommandHandler(
         "ref",
         referral
+    )
+)
+
+app.add_handler(
+    CommandHandler(
+        "transfer",
+        transfer_command
     )
 )
 
