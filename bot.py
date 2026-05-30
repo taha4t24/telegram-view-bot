@@ -174,6 +174,11 @@ def get_balance(user_id):
 def change_balance(user_id, amount):
 
     cursor.execute(
+        "INSERT OR IGNORE INTO users (user_id) VALUES (?)",
+        (user_id,)
+    )
+
+    cursor.execute(
         "UPDATE users SET balance = balance + ? WHERE user_id=?",
         (amount, user_id)
     )
