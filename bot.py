@@ -63,11 +63,17 @@ CREATE TABLE IF NOT EXISTS transfers (
 )
 """)
 
+
+
 # لاگ
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS logs (
+CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    text TEXT,
+    user_id INTEGER,
+    channel TEXT,
+    count INTEGER,
+    order_id TEXT,
+    price INTEGER,
     date TEXT
 )
 """)
