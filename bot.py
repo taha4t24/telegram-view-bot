@@ -108,7 +108,6 @@ admin_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-```python
 # =========================
 # توابع دیتابیس
 # =========================
@@ -300,7 +299,6 @@ def get_user_orders(user_id):
             text,
             str(datetime.datetime.now())
         )
-    )
 
     conn.commit()
 
@@ -334,7 +332,6 @@ async def start(
         reply_markup=main_keyboard
     )
 
-```python
 # =========================
 # حساب من
 # =========================
@@ -1046,11 +1043,11 @@ async def transfer_command(
 
         change_balance(target_id, amount)
 
-                save_transfer(
+                save_transfer
             sender_id,
             target_id,
             amount
-        )
+        
 
         await update.message.reply_text(
             f"""
