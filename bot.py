@@ -108,6 +108,7 @@ admin_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
+
 # =========================
 # توابع دیتابیس
 # =========================
@@ -286,21 +287,6 @@ def get_user_orders(user_id):
     )
 
     return cursor.fetchall()
-
-        """
-        INSERT INTO logs
-        (
-            text,
-            date
-        )
-        VALUES (?, ?)
-        """,
-        (
-            text,
-            str(datetime.datetime.now())
-        )
-
-    conn.commit()
 
 # =========================
 # استارت
@@ -1043,10 +1029,11 @@ async def transfer_command(
 
         change_balance(target_id, amount)
 
-                save_transfer
+        save_transfer(
             sender_id,
             target_id,
             amount
+        )
         
 
         await update.message.reply_text(
@@ -1142,16 +1129,14 @@ async def button_handler(
 
     elif text == "👤 حساب من":
 
-
-    elif text == "📜 سفارش های من":
-
-        await my_orders(
+        await my_account(
             update,
             context
         )
 
+    elif text == "📜 خرید های من":
 
-        await my_account(
+        await my_orders(
             update,
             context
         )
