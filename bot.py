@@ -709,13 +709,11 @@ async def addbalance(
 
     try:
 
-        user_id = int(
-            context.args[0]
-        )
+        user_id = int(context.args[0])
 
-        amount = int(
-            context.args[1]
-        )
+        amount = int(context.args[1])
+
+        add_user(user_id)
 
         change_balance(
             user_id,
@@ -736,10 +734,10 @@ async def addbalance(
             """
         )
 
-    except:
+    except Exception as e:
 
         await update.message.reply_text(
-            "خطا ❌"
+            f"خطا ❌\n{e}"
         )
 
 # =========================
