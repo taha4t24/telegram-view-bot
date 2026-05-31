@@ -555,51 +555,32 @@ async def get_count(
         data = r.json()
 
         # کم شدن موجودی کاربران عادی
-if user_id != ADMIN_ID:
+ user_id = update.effective_user.id
 
-    change_balance(
-        user_id,
-        -price
-    )
+    count = int(update.message.text)
 
-        # ذخیره سفارش
-        save_order(
-            user_id,
-            channel,
-            count,
-            data["order"],
-            price
-        )
+    price = count * 10
 
-        # ذخیره لاگ
-        save_log(
-            f"new order user:{user_id}"
-        )
+    if user_id != ADMIN_ID:
 
-        # پیام موفق
-        msg = (
-            "✅ سفارش ثبت شد\n\n"
-            f"🆔 شماره سفارش: {data['order']}\n"
-            f"👁 تعداد: {count}\n"
-            f"💰 هزینه: {price}\n"
-            f"📢 کانال: @VPNPulseX"
-        )
+        balance = get_balance(user_id)
 
-        await update.message.reply_text(
-            msg,
-            reply_markup=main_keyboard
-        )
+        if balance < price:
 
-    except Exception as e:
+            await update.message.reply_text(
+                f"""
+❌ موجودی شما کافی نیست
 
-        print(e)
+💰 هزینه سفارش:
+{price}
 
-        await update.message.reply_text(
-            "خطا ❌",
-            reply_markup=main_keyboard
-        )
+👤 موجودی شما:
+{balance}
+                """,
+                reply_markup=main_keyboard
+            )
 
-    return ConversationHandler.END
+            return ConversationHandler.END
 
 # =========================
 # سفارش های من
