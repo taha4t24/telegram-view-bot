@@ -702,66 +702,97 @@ async def stats(
 # شارژ حساب
 # =========================
 
-async def addbalance(
+async def get_count(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
 ):
 
-    if update.effective_user.id != ADMIN_ID:
-        return
-
     try:
 
-        user_id = int(context.args[0])
+        user_id = update.effective_user.id
 
-        amount = int(context.args[1])
+        count = int(update.message.text)
 
-        add_user(user_id)
+        price = count * 10
 
-        change_balance(
-            user_id,
-            amount
+        if user_id != ADMIN_ID:
+
+            balance = get_balance(user_id)
+
+            if balance < price:
+
+                await update.message.reply_text(
+                    f"""
+❌ موجودی شما کافی نیست
+
+💰 هزینه سفارش:
+{price}
+
+👤 موجودی شما:
+{balance}
+                    """,
+                    reply_markup=main_keyboard
+                )
+
+                return ConversationHandler.END
+
+        link = context.user_data["link"]
+
+        parts = link.split("/")
+
+        channel = parts[-2]
+
+        post_id = int(parts[-1])
+
+        params = {
+            "apikey": API_KEY,
+            "typeseen": "en",
+            "type": "view",
+            "count": count,
+            "runs": 1,
+            "speed": 100,
+            "period": 5,
+            "channel": channel,
+            "id": post_id
+        }
+
+        r = requests.get(
+            BASE_URL,
+            params=params
         )
 
-        new_balance = get_balance(user_id)
+        data = r.json()
+
+        if user_id != ADMIN_ID:
+            change_balance(user_id, -price)
+
+        save_order(
+            user_id,
+            channel,
+            count,
+            data["order"],
+            price
+        )
 
         await update.message.reply_text(
             f"""
-✅ موجودی افزایش یافت
+✅ سفارش ثبت شد
 
-👤 کاربر:
-{user_id}
-
-💰 مبلغ شارژ:
-{amount}
-
-📦 موجودی جدید:
-{new_balance}
-            """
+🆔 سفارش:
+{data['order']}
+            """,
+            reply_markup=main_keyboard
         )
 
-        try:
-
-            await context.bot.send_message(
-                chat_id=user_id,
-                text=f"""
-💰 حساب شما شارژ شد
-
-مبلغ:
-{amount}
-
-📦 موجودی فعلی:
-{new_balance}
-                """
-            )
-        except:
-            pass
-
     except Exception as e:
+
+        print(e)
 
         await update.message.reply_text(
             f"خطا ❌\n{e}"
         )
+
+    return ConversationHandler.END
 
  # =========================
 # بن کاربر
