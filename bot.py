@@ -351,6 +351,9 @@ async def my_account(
 
     balance = get_balance(user_id)
 
+    print("ACCOUNT USER ID =", user_id)
+    print("ACCOUNT BALANCE =", balance)
+
     await update.message.reply_text(
         f"""
 👤 حساب شما
