@@ -1282,12 +1282,12 @@ app.add_handler(
     )
 )
 
-app.add_handler(
-    CommandHandler(
-        "ban",
-        ban
-    )
-)
+# app.add_handler(
+#     CommandHandler(
+#         "ban",
+#         ban
+#     )
+# )
 
 app.add_handler(
     CommandHandler(
