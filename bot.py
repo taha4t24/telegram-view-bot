@@ -116,9 +116,10 @@ main_keyboard = ReplyKeyboardMarkup(
 
 admin_keyboard = ReplyKeyboardMarkup(
     [
-        ["📊 آمار", "📨 ارسال همگانی"],
-        ["➕ شارژ کاربر", "🚫 بن کاربر"],
-        ["✅ آنبن کاربر", "📋 سفارش ها"],
+        ["📊 آمار", "💰 موجودی API"],
+        ["📨 ارسال همگانی", "➕ شارژ کاربر"],
+        ["🚫 بن کاربر", "✅ آنبن کاربر"],
+        ["📋 سفارش ها"],
         ["⬅️ بازگشت"]
     ],
     resize_keyboard=True
@@ -372,11 +373,6 @@ async def my_account(
 # سفارش های من
 # =========================
 
-async def my_orders(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
-
     user_id = update.effective_user.id
 
     orders = get_user_orders(user_id)
@@ -558,11 +554,13 @@ async def get_count(
 
         data = r.json()
 
-        # کم شدن موجودی
-        change_balance(
-            user_id,
-            -price
-        )
+        # کم شدن موجودی کاربران عادی
+if user_id != ADMIN_ID:
+
+    change_balance(
+        user_id,
+        -price
+    )
 
         # ذخیره سفارش
         save_order(
@@ -748,28 +746,71 @@ async def addbalance(
 
         await update.message.reply_text(
             f"""
-موجودی افزایش یافت ✅
+✅ موجودی افزایش یافت
 
-موجودی جدید:
+👤 کاربر:
+{user_id}
+
+💰 مبلغ شارژ:
+{amount}
+
+📦 موجودی جدید:
 {new_balance}
             """
         )
 
-        await context.bot.send_message(
-            chat_id=user_id,
-            text=f"""
+        try:
+
+            await context.bot.send_message(
+                chat_id=user_id,
+                text=f"""
 💰 حساب شما شارژ شد
 
 مبلغ:
-{amount} تومان
-            """
-        )
+{amount}
+
+📦 موجودی فعلی:
+{new_balance}
+                """
+            )
+        except:
+            pass
 
     except Exception as e:
 
         await update.message.reply_text(
             f"خطا ❌\n{e}"
         )
+
+ # =========================
+# بن کاربر
+# =========================
+
+async def ban(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    if update.effective_user.id != ADMIN_ID:
+        return
+
+    try:
+
+        user_id = int(
+            context.args[0]
+        )
+
+        ban_user(user_id)
+
+        await update.message.reply_text(
+            "کاربر بن شد ✅"
+        )
+
+    except:
+
+        await update.message.reply_text(
+            "خطا ❌"
+        )       
 
 # =========================
 # آنبن
@@ -1112,6 +1153,13 @@ async def button_handler(
             context
         )
 
+        elif text == "💰 موجودی API":
+
+    await amount(
+        update,
+        context
+    )
+
     elif text == "💸 انتقال سکه":
 
         await transfer_coin(
@@ -1285,12 +1333,12 @@ app.add_handler(
     )
 )
 
-# app.add_handler(
-#     CommandHandler(
-#         "ban",
-#         ban
-#     )
-# )
+app.add_handler(
+    CommandHandler(
+        "ban",
+        ban
+    )
+)
 
 app.add_handler(
     CommandHandler(
