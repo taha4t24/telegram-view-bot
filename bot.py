@@ -504,15 +504,15 @@ async def get_count(
         # قیمت سفارش
         price = count * 10
 
-       # فقط کاربران عادی نیاز به موجودی دارند
-    if user_id != ADMIN_ID:
+     # فقط کاربران عادی نیاز به موجودی دارند
+        if user_id != ADMIN_ID:
 
-    balance = get_balance(user_id)
+            balance = get_balance(user_id)
 
-    if balance < price:
+            if balance < price:
 
-        await update.message.reply_text(
-            f"""
+                await update.message.reply_text(
+                    f"""
 ❌ موجودی شما کافی نیست
 
 💰 هزینه سفارش:
@@ -520,12 +520,12 @@ async def get_count(
 
 👤 موجودی شما:
 {balance}
-            """,
-            reply_markup=main_keyboard
-        )
+                    """,
+                    reply_markup=main_keyboard
+                )
 
-        return ConversationHandler.END
-
+                return ConversationHandler.END
+                
         # لینک پست
         link = context.user_data["link"]
 
