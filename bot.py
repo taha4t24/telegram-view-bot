@@ -525,7 +525,7 @@ async def get_count(
                 )
 
                 return ConversationHandler.END
-                
+
         # لینک پست
         link = context.user_data["link"]
 
@@ -737,13 +737,20 @@ async def addbalance(
         add_user(user_id)
 
         change_balance(
-            user_id,
-            amount
-        )
+    user_id,
+    amount
+)
 
-        await update.message.reply_text(
-            "موجودی افزایش یافت ✅"
-        )
+new_balance = get_balance(user_id)
+
+await update.message.reply_text(
+    f"""
+موجودی افزایش یافت ✅
+
+موجودی جدید:
+{new_balance}
+    """
+)
 
         await context.bot.send_message(
             chat_id=user_id,
