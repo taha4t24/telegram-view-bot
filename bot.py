@@ -80,6 +80,16 @@ CREATE TABLE IF NOT EXISTS orders (
 
 conn.commit()
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    text TEXT,
+    date TEXT
+)
+""")
+
+conn.commit()
+
 # کد تخفیف
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS discounts (
@@ -113,7 +123,6 @@ admin_keyboard = ReplyKeyboardMarkup(
     ],
     resize_keyboard=True
 )
-
 
 # =========================
 # توابع دیتابیس
@@ -495,14 +504,15 @@ async def get_count(
         # قیمت سفارش
         price = count * 10
 
-        # موجودی کاربر
-        balance = get_balance(user_id)
+       # فقط کاربران عادی نیاز به موجودی دارند
+    if user_id != ADMIN_ID:
 
-        # چک موجودی
-        if balance < price:
+    balance = get_balance(user_id)
 
-            await update.message.reply_text(
-                f"""
+    if balance < price:
+
+        await update.message.reply_text(
+            f"""
 ❌ موجودی شما کافی نیست
 
 💰 هزینه سفارش:
@@ -510,11 +520,11 @@ async def get_count(
 
 👤 موجودی شما:
 {balance}
-                """,
-                reply_markup=main_keyboard
-            )
+            """,
+            reply_markup=main_keyboard
+        )
 
-            return ConversationHandler.END
+        return ConversationHandler.END
 
         # لینک پست
         link = context.user_data["link"]
@@ -1153,13 +1163,6 @@ async def button_handler(
     elif text == "💳 افزایش موجودی":
 
         await increase_balance(
-            update,
-            context
-        )
-
-    elif text == "📜 سفارش های من":
-
-        await my_orders(
             update,
             context
         )
