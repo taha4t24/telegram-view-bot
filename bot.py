@@ -737,20 +737,20 @@ async def addbalance(
         add_user(user_id)
 
         change_balance(
-    user_id,
-    amount
-)
+            user_id,
+            amount
+        )
 
-new_balance = get_balance(user_id)
+        new_balance = get_balance(user_id)
 
-await update.message.reply_text(
-    f"""
+        await update.message.reply_text(
+            f"""
 موجودی افزایش یافت ✅
 
 موجودی جدید:
 {new_balance}
-    """
-)
+            """
+        )
 
         await context.bot.send_message(
             chat_id=user_id,
@@ -766,36 +766,6 @@ await update.message.reply_text(
 
         await update.message.reply_text(
             f"خطا ❌\n{e}"
-        )
-
-# =========================
-# بن کاربر
-# =========================
-
-async def ban(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
-
-    if update.effective_user.id != ADMIN_ID:
-        return
-
-    try:
-
-        user_id = int(
-            context.args[0]
-        )
-
-        ban_user(user_id)
-
-        await update.message.reply_text(
-            "کاربر بن شد ✅"
-        )
-
-    except:
-
-        await update.message.reply_text(
-            "خطا ❌"
         )
 
 # =========================
