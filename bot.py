@@ -113,7 +113,7 @@ async def admin(
 # =========================
 
 
-    async def buttons(
+async def buttons(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
 ):
