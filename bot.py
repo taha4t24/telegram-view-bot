@@ -3,7 +3,9 @@ from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
-    ContextTypes
+    ContextTypes,
+    MessageHandler,
+    filters
 )
 
 from config import *
@@ -75,6 +77,20 @@ async def admin(
     )
 
 # =========================
+# دکمه ها
+# =========================
+
+async def buttons(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    text = update.message.text
+
+    if text == "👤 حساب من":
+        await my_account(update, context)
+
+# =========================
 # اجرای ربات
 # =========================
 
@@ -93,6 +109,13 @@ app.add_handler(
     CommandHandler(
         "admin",
         admin
+    )
+)
+
+app.add_handler(
+    MessageHandler(
+        filters.TEXT,
+        buttons
     )
 )
 
