@@ -60,6 +60,34 @@ async def my_account(
     )
 
 # =========================
+# افزایش موجودی
+# =========================
+
+async def increase_balance(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    user_id = update.effective_user.id
+
+    balance = get_balance(user_id)
+
+    await update.message.reply_text(
+        f"""
+💰 موجودی کیف پول شما:
+
+{balance:,} تومان
+
+مبلغ مورد نظر برای شارژ را ارسال کنید.
+
+حداقل شارژ:
+{MIN_CHARGE:,} تومان
+        """
+    )
+
+    context.user_data["waiting_charge_amount"] = True
+
+# =========================
 # پنل ادمین
 # =========================
 
@@ -89,6 +117,9 @@ async def buttons(
 
     if text == "👤 حساب من":
         await my_account(update, context)
+
+    elif text == "💰 افزایش موجودی":
+        await increase_balance(update, context)
 
 # =========================
 # اجرای ربات
