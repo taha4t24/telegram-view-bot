@@ -115,6 +115,8 @@ async def buttons(
 
     text = update.message.text
 
+    print(text)
+
     if text == "👤 حساب من":
         await my_account(update, context)
 
