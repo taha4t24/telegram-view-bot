@@ -108,6 +108,10 @@ async def admin(
 # دکمه ها
 # =========================
 
+# =========================
+# دکمه ها
+# =========================
+
 async def buttons(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
@@ -115,7 +119,9 @@ async def buttons(
 
     text = update.message.text
 
-    print(text)
+    await update.message.reply_text(
+        f"DEBUG: {text}"
+    )
 
     if text == "👤 حساب من":
         await my_account(update, context)
