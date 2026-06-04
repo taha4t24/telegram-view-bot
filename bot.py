@@ -120,6 +120,32 @@ async def buttons(
 
     text = update.message.text
 
+    # =========================
+# انتخاب سرویس
+# =========================
+
+if context.user_data.get("waiting_service"):
+
+    if text not in SERVICES:
+
+        await update.message.reply_text(
+            "❌ سرویس معتبر نیست."
+        )
+
+        return
+
+    context.user_data["service"] = text
+
+    context.user_data["waiting_service"] = False
+    context.user_data["waiting_link"] = True
+
+    await update.message.reply_text(
+        "🔗 لینک پست را ارسال کنید."
+    )
+
+    return
+
+
     # دریافت مبلغ شارژ
     if context.user_data.get("waiting_charge_amount"):
 
@@ -197,11 +223,22 @@ async def buttons(
         )
 
     # سفارش بازدید
-    elif text == "📈 سفارش بازدید":
+elif text == "📈 سفارش بازدید":
 
-        await update.message.reply_text(
-            "🚧 این بخش هنوز فعال نشده است."
-        )
+    await update.message.reply_text(
+        """
+سرویس مورد نظر را انتخاب کنید:
+
+بازدید ارزان
+بازدید دقیق
+بازدید فیک
+بازدید تبلیغاتی
+
+نام سرویس را ارسال کنید.
+        """
+    )
+
+    context.user_data["waiting_service"] = True
 
     # سفارش خودکار
     elif text == "🤖 سفارش بازدید خودکار":
@@ -229,6 +266,35 @@ async def buttons(
 
         await update.message.reply_text(
             "🚧 هنوز خریدی ثبت نشده است."
+        )
+
+    # تعرفه محصولات
+    elif text == "💰 تعرفه محصولات":
+
+        await update.message.reply_text(
+            """
+💰 تعرفه محصولات به شرح زیر میباشد 👇
+
+💬 بازدید ارزان #آنی : 600
+
+⚡️ پنل اختصاصی دقیق #آنی 👀 : 750
+
+🇺🇸 بازدید فیک #آنی : 800
+
+📊 بازدید مخصوص تبلیغات در کانال (با لینک) : 850
+
+━━━━━━━━━━━━━━
+
+❤️ ریکشن : 10000
+
+📊 نظرسنجی : 25000
+
+👍 لایک : 24000
+
+━━━━━━━━━━━━━━
+
+💡 قیمت‌های فوق برای هر 1000 عدد می‌باشد.
+            """
         )
 
     # پشتیبانی
