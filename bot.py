@@ -120,6 +120,8 @@ async def buttons(
 
     text = update.message.text
 
+    print("USER_DATA =", context.user_data)
+
     # انتخاب سرویس
     if context.user_data.get("waiting_service"):
 
