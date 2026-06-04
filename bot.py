@@ -191,25 +191,59 @@ async def buttons(
 
         context.user_data["waiting_quantity"] = False
 
-        await update.message.reply_text(
-            f"""
-✅ پیش فاکتور سفارش
+        user_id = update.effective_user.id
+
+balance = get_balance(user_id)
+
+if balance < total_price:
+
+    await update.message.reply_text(
+        f"""
+❌ موجودی کافی نیست
+
+💰 موجودی شما:
+{balance:,} تومان
+
+💵 مبلغ سفارش:
+{total_price:,} تومان
+        """
+    )
+
+    return
+
+change_balance(
+    user_id,
+    -total_price
+)
+
+add_order(
+    user_id,
+    service,
+    context.user_data["link"],
+    quantity,
+    total_price
+)
+
+context.user_data["waiting_quantity"] = False
+
+await update.message.reply_text(
+    f"""
+✅ سفارش ثبت شد
 
 📦 سرویس:
 {service}
-
-🔗 لینک:
-{context.user_data['link']}
 
 📊 تعداد:
 {quantity:,}
 
 💰 مبلغ:
 {total_price:,} تومان
-            """
-        )
 
-        return
+💳 از موجودی شما کسر شد.
+    """
+)
+
+return
 
     # دریافت مبلغ شارژ
     if context.user_data.get("waiting_charge_amount"):
