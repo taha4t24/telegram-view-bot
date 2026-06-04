@@ -21,6 +21,32 @@ CREATE TABLE IF NOT EXISTS users(
 )
 """)
 
+# =========================
+# سفارشات
+# =========================
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS orders(
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    user_id INTEGER,
+
+    service TEXT,
+
+    link TEXT,
+
+    quantity INTEGER,
+
+    price INTEGER,
+
+    status TEXT,
+
+    created_at TEXT
+
+)
+""")
+
 conn.commit()
 
 # =========================
@@ -51,7 +77,9 @@ def add_user(user_id):
             """,
             (
                 user_id,
-                datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
             )
         )
 
@@ -157,3 +185,116 @@ def is_banned(user_id):
         return result[0] == 1
 
     return False
+
+# =========================
+# ثبت سفارش
+# =========================
+
+def add_order(
+    user_id,
+    service,
+    link,
+    quantity,
+    price
+):
+
+    cursor.execute(
+        """
+        INSERT INTO orders(
+
+            user_id,
+            service,
+            link,
+            quantity,
+            price,
+            status,
+            created_at
+
+        )
+        VALUES(
+            ?, ?, ?, ?, ?, ?, ?
+        )
+        """,
+        (
+            user_id,
+            service,
+            link,
+            quantity,
+            price,
+            "درحال انجام",
+            datetime.now().strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+        )
+    )
+
+    conn.commit()
+
+# =========================
+# سفارشات کاربر
+# =========================
+
+def get_user_orders(user_id):
+
+    cursor.execute(
+        """
+        SELECT
+            id,
+            service,
+            quantity,
+            price,
+            status
+        FROM orders
+        WHERE user_id=?
+        ORDER BY id DESC
+        """,
+        (user_id,)
+    )
+
+    return cursor.fetchall()
+
+# =========================
+# سفارشات فعال
+# =========================
+
+def get_active_orders(user_id):
+
+    cursor.execute(
+        """
+        SELECT
+            id,
+            service,
+            quantity,
+            status
+        FROM orders
+        WHERE user_id=?
+        AND status='درحال انجام'
+        ORDER BY id DESC
+        """,
+        (user_id,)
+    )
+
+    return cursor.fetchall()
+
+# =========================
+# تغییر وضعیت سفارش
+# =========================
+
+def update_order_status(
+    order_id,
+    status
+):
+
+    cursor.execute(
+        """
+        UPDATE orders
+        SET status=?
+        WHERE id=?
+        """,
+        (
+            status,
+            order_id
+        )
+    )
+
+    conn.commit()
