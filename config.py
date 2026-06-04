@@ -2,7 +2,7 @@
 # تنظیمات ربات
 # =========================
 
-BOT_TOKEN = "8614770879:AAFzNlcPHwGowbtYmCz3hUT_32YRPyp1WXY"
+BOT_TOKEN = "8614770879:AAEmC_l1Q07EXCWpFjRw1sClbQLLve1jerg"
 
 API_KEY = "jEv69xDL1XRTZnrB"
 
