@@ -125,6 +125,9 @@ async def buttons(
     # انتخاب سرویس
     if context.user_data.get("waiting_service"):
 
+        print("TEXT =", text)
+        print("SERVICES =", SERVICES)
+
         if text not in SERVICES:
 
             await update.message.reply_text(
