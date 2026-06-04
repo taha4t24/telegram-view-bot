@@ -108,11 +108,6 @@ async def admin(
 # دکمه ها
 # =========================
 
-# =========================
-# دکمه ها
-# =========================
-
-
 async def buttons(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
@@ -120,9 +115,61 @@ async def buttons(
 
     text = update.message.text
 
+    # دریافت مبلغ شارژ
+    if context.user_data.get("waiting_charge_amount"):
+
+        if text.isdigit():
+
+            amount = int(text)
+
+            if amount < MIN_CHARGE:
+
+                await update.message.reply_text(
+                    f"حداقل شارژ {MIN_CHARGE:,} تومان است."
+                )
+
+                return
+
+            fee = int(amount * CHARGE_FEE_PERCENT / 100)
+
+            total_amount = amount + fee
+
+            context.user_data["charge_amount"] = amount
+            context.user_data["waiting_charge_amount"] = False
+            context.user_data["waiting_receipt"] = True
+
+            await update.message.reply_text(
+                f"""
+💳 اطلاعات پرداخت
+
+👤 صاحب کارت:
+{CARD_OWNER}
+
+💳 شماره کارت:
+{CARD_NUMBER}
+
+━━━━━━━━━━━━━━
+
+💰 مبلغ درخواستی:
+{amount:,} تومان
+
+📈 کارمزد:
+{fee:,} تومان
+
+💵 مبلغ قابل پرداخت:
+{total_amount:,} تومان
+
+📸 پس از واریز عکس رسید را ارسال کنید.
+                """
+            )
+
+            return
+
+    # دکمه حساب من
     if text == "👤 حساب من":
         await my_account(update, context)
 
+    # دکمه افزایش موجودی
     elif text == "💰 افزایش موجودی":
         await increase_balance(update, context)
 
