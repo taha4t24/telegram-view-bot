@@ -144,6 +144,70 @@ async def buttons(
 
         return
 
+    # دریافت لینک پست
+    if context.user_data.get("waiting_link"):
+
+        context.user_data["link"] = text
+
+        context.user_data["waiting_link"] = False
+        context.user_data["waiting_quantity"] = True
+
+        await update.message.reply_text(
+            """
+📊 تعداد مورد نظر را ارسال کنید.
+
+مثال:
+1000
+5000
+10000
+            """
+        )
+
+        return
+
+    # دریافت تعداد
+    if context.user_data.get("waiting_quantity"):
+
+        if not text.isdigit():
+
+            await update.message.reply_text(
+                "❌ فقط عدد وارد کنید."
+            )
+
+            return
+
+        quantity = int(text)
+
+        service = context.user_data["service"]
+
+        price_per_1000 = SERVICES[service]
+
+        total_price = int(
+            quantity * price_per_1000 / 1000
+        )
+
+        context.user_data["waiting_quantity"] = False
+
+        await update.message.reply_text(
+            f"""
+✅ پیش فاکتور سفارش
+
+📦 سرویس:
+{service}
+
+🔗 لینک:
+{context.user_data['link']}
+
+📊 تعداد:
+{quantity:,}
+
+💰 مبلغ:
+{total_price:,} تومان
+            """
+        )
+
+        return
+
     # دریافت مبلغ شارژ
     if context.user_data.get("waiting_charge_amount"):
 
